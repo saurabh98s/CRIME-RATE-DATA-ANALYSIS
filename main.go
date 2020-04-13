@@ -22,6 +22,14 @@ type AutoCrimeData []struct {
 }
 
 func servingLoginPage(w http.ResponseWriter, r *http.Request) {
+	loginPage, err := template.ParseFiles("login.html")
+	if err != nil {
+		log.Println(err)
+	}
+	err = loginPage.Execute(w, nil)
+	if err != nil {
+		log.Println(err)
+	}
 
 }
 
