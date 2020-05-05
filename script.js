@@ -5,12 +5,12 @@ var chart = new Chart(ctx, {
 
     // The data for our dataset
     data: {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        labels: ['Jharkhand', 'Bihar', 'UP', 'Rajsthan'],
         datasets: [{
-            label: 'My First dataset',
+            label: 'Auto theft stolen',
             backgroundColor: 'rgb(255, 99, 132)',
             borderColor: 'rgb(255, 99, 132)',
-            data: [0, 10, 5, 2, 20, 30, 45]
+            data: [1120, 1110, 895, 2212, 3220]
         }]
     },
 

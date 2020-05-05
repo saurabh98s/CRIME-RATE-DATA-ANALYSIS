@@ -40,6 +40,11 @@ func postMethodPage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	for key, val := range dataFromS3 {
+		fmt.Println(key, val)
+
+	}
 	mainPage, err := template.ParseFiles("index.html")
 	if err != nil {
 		log.Println(err)
@@ -55,6 +60,7 @@ func main() {
 	router := mux.NewRouter()
 	fmt.Println("Starting server for testing")
 	router.HandleFunc("/", servingLoginPage).Methods("Get")
+	router.HandleFunc("/data", postMethodPage).Methods("Post")
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir(".")))
 	err := http.ListenAndServe(":8081", router)
 	if err != nil {
