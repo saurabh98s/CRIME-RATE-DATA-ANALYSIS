@@ -21,12 +21,14 @@ type AutoCrimeData []struct {
 	AutoTheftStolen            int    `json:"Auto_Theft_Stolen"`
 }
 
+var tpl *template.Template
+
+func init() {
+	tpl = template.Must(template.ParseGlob("templates/*"))
+}
+
 func servingLoginPage(w http.ResponseWriter, r *http.Request) {
-	loginPage, err := template.ParseFiles("login.html")
-	if err != nil {
-		log.Println(err)
-	}
-	err = loginPage.Execute(w, nil)
+	err := tpl.ExecuteTemplate(w, "login.html", nil)
 	if err != nil {
 		log.Println(err)
 	}
@@ -34,6 +36,7 @@ func servingLoginPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func postMethodPage(w http.ResponseWriter, r *http.Request) {
+
 	file, _ := ioutil.ReadFile("Auto_theft.json")
 	var dataFromS3 AutoCrimeData
 	err := json.Unmarshal(file, &dataFromS3)
@@ -45,11 +48,10 @@ func postMethodPage(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(key, val)
 
 	}
-	mainPage, err := template.ParseFiles("index.html")
 	if err != nil {
 		log.Println(err)
 	}
-	err = mainPage.Execute(w, dataFromS3)
+	err = tpl.ExecuteTemplate(w, "index.html", dataFromS3)
 	if err != nil {
 		log.Println(err)
 	}
