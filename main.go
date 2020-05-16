@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/geeks/miniproject/logger"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -11,6 +12,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// AutoCrimeData contains all the parsed data from Json file
 type AutoCrimeData []struct {
 	AreaName                   string `json:"Area_Name"`
 	Year                       int    `json:"Year"`
@@ -36,6 +38,11 @@ func servingLoginPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func postMethodPage(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		logger.Log.Info(w, "ParseForm() err: %v", err)
+		return
+	}
+	userInput:=r.FormValue("userInput")
 
 	file, _ := ioutil.ReadFile("Auto_theft.json")
 	var dataFromS3 AutoCrimeData
