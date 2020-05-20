@@ -1,12 +1,11 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/geeks/miniproject/logger"
+	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
 	"html/template"
-	"io/ioutil"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -24,15 +23,29 @@ type AutoCrimeData []struct {
 }
 
 var tpl *template.Template
+var db *mgo.Database
 
 func init() {
 	tpl = template.Must(template.ParseGlob("templates/*"))
+	logger.Log.Info("Connecting to mongodb...")
+	session, err := mgo.Dial("mongodb://127.0.0.1:27017")
+	if err != nil {
+		logger.Log.Fatal(err)
+	}
+	db = session.DB("miniproject")
+
+	logger.Log.Info("Connected to mongodb successfully...")
+
+}
+
+func DB() *mgo.Database {
+	return db
 }
 
 func servingLoginPage(w http.ResponseWriter, r *http.Request) {
 	err := tpl.ExecuteTemplate(w, "login.html", nil)
 	if err != nil {
-		log.Println(err)
+		logger.Log.Info(err)
 	}
 
 }
@@ -43,26 +56,13 @@ func postMethodPage(w http.ResponseWriter, r *http.Request) {
 		logger.Log.Info(w, "ParseForm() err: %v", err)
 		return
 	}
-	userInput:=r.FormValue("userInput")
+	userInput := r.FormValue("userInput")
+	query := bson.M{"Area_Name": userInput}
+	DB().C("autocrime").Find(query).All(&data)
 
-
-	file, _ := ioutil.ReadFile("Auto_theft.json")
-	var dataFromS3 AutoCrimeData
-	err := json.Unmarshal(file, &dataFromS3)
+	err := tpl.ExecuteTemplate(w, "index.html", data)
 	if err != nil {
-		log.Fatalln(err)
-	}
-
-	for key, val := range dataFromS3 {
-		fmt.Println(key, val)
-
-	}
-	if err != nil {
-		log.Println(err)
-	}
-	err = tpl.ExecuteTemplate(w, "index.html", dataFromS3)
-	if err != nil {
-		log.Println(err)
+		logger.Log.Info(err)
 	}
 }
 
