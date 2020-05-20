@@ -38,11 +38,13 @@ func servingLoginPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func postMethodPage(w http.ResponseWriter, r *http.Request) {
+	var data []*AutoCrimeData
 	if err := r.ParseForm(); err != nil {
 		logger.Log.Info(w, "ParseForm() err: %v", err)
 		return
 	}
 	userInput:=r.FormValue("userInput")
+
 
 	file, _ := ioutil.ReadFile("Auto_theft.json")
 	var dataFromS3 AutoCrimeData
