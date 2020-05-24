@@ -52,15 +52,20 @@ func servingLoginPage(w http.ResponseWriter, r *http.Request) {
 
 func postMethodPage(w http.ResponseWriter, r *http.Request) {
 	var data []*AutoCrimeData
+	c:=db.C("autocrime")
 	if err := r.ParseForm(); err != nil {
 		logger.Log.Info(w, "ParseForm() err: %v", err)
 		return
 	}
 	userInput := r.FormValue("userInput")
-	query := bson.M{"Area_Name": userInput}
-	DB().C("autocrime").Find(query).All(&data)
+	query := bson.M{"Year": userInput}
+	err:=c.Find(query).All(&data)
+	if err == nil {
+		logger.Log.Info(err)
 
-	err := tpl.ExecuteTemplate(w, "index.html", data)
+	}
+	logger.Log.Print(data)
+	err= tpl.ExecuteTemplate(w, "index.html", data)
 	if err != nil {
 		logger.Log.Info(err)
 	}
